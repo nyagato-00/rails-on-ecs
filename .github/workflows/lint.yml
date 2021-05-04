@@ -4,9 +4,22 @@ on: [push, pull_request]
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: /usr/bin/arch -arch ${{ matrix.runner }} /bin/bash -l {0}
+    runs-on: ${{ matrix.runner }}
+    env:
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+      NSUnbufferedIO: YES
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [arm64e, x86_64]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
+        with:
+          platforms: linux/amd64,linux/arm64
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
